@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Labyrinthus Code Scrambler</title>
 <style>
-/* --- Body & Background --- */
 body {
     margin: 0;
     font-family: 'Courier New', monospace;
@@ -14,7 +13,7 @@ body {
     overflow: hidden;
 }
 
-/* --- Matrix-style falling letters --- */
+/* Matrix-style background */
 #matrix {
     position: fixed;
     top: 0;
@@ -24,7 +23,7 @@ body {
     z-index: -1;
 }
 
-/* --- Main container --- */
+/* Container */
 .container {
     position: relative;
     z-index: 1;
@@ -35,7 +34,7 @@ body {
     text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
 }
 
-/* --- Input & Button --- */
+/* Input & Button */
 input, button {
     background: black;
     border: 1px solid #0ff;
@@ -52,11 +51,48 @@ button:hover {
     cursor: pointer;
 }
 
-/* --- Output --- */
+/* Output */
 #output {
     margin-top: 20px;
     font-size: 24px;
     min-height: 40px;
+}
+
+/* Modal styling */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 2; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    color: #0ff;
+    text-align: center;
+}
+
+.modal-content {
+    margin: 10% auto;
+    padding: 20px;
+    border: 2px solid #0ff;
+    width: 80%;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #0ff;
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+}
+
+.close {
+    color: #0ff;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #0f0;
 }
 </style>
 </head>
@@ -71,8 +107,19 @@ button:hover {
     <div id="output"></div>
 </div>
 
+<!-- Modal -->
+<div id="endModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Congratulations!</h2>
+    <p>You have reached the end of Labyrinthus.</p>
+    <!-- You can replace this image with any ending image/video -->
+    <img src="https://i.imgur.com/2pYkV9H.png" alt="Labyrinthus End" style="max-width:100%; border:2px solid #0ff; border-radius:10px;">
+  </div>
+</div>
+
 <script>
-// --- Matrix background ---
+// Matrix background
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -100,31 +147,28 @@ function drawMatrix() {
 }
 setInterval(drawMatrix, 50);
 
-// --- Scramble code function ---
+// Scramble code function
 function scrambleCheck() {
     const code = document.getElementById('codeInput').value.trim().toUpperCase();
     const output = document.getElementById('output');
 
     const secret = "HIC INCLASUS VITAM PERDITT";
     let display = "";
-
     let i = 0;
+
     const scramble = setInterval(() => {
         if(i < secret.length) {
             let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             display = "";
             for(let j = 0; j < secret.length; j++) {
-                if(j <= i) display += secret[j];
-                else display += letters[Math.floor(Math.random() * letters.length)];
+                display += j <= i ? secret[j] : letters[Math.floor(Math.random() * letters.length)];
             }
             output.textContent = display;
             i++;
         } else {
             clearInterval(scramble);
             if(code === secret) {
-                output.textContent = "Code Accepted: Welcome!";
-                output.style.color = "#0f0";
-                output.style.textShadow = "0 0 5px #0f0, 0 0 10px #0f0";
+                showModal();
             } else {
                 output.textContent = "Invalid Code!";
                 output.style.color = "#f00";
@@ -132,6 +176,17 @@ function scrambleCheck() {
             }
         }
     }, 50);
+}
+
+// Modal functions
+function showModal() {
+    const modal = document.getElementById('endModal');
+    modal.style.display = "block";
+}
+
+function closeModal() {
+    const modal = document.getElementById('endModal');
+    modal.style.display = "none";
 }
 </script>
 
