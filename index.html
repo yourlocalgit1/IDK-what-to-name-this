@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Scrambler</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Enter the Code</h1>
+        <input type="text" id="codeInput" placeholder="Enter code here">
+        <button onclick="checkCode()">Submit</button>
+        <div id="output"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+/* styles.css */
+body {
+    font-family: 'Courier New', monospace;
+    background-color: #2e2e2e;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+}
+
+.container {
+    text-align: center;
+    border: 2px solid #fff;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #333;
+}
+
+input, button {
+    background-color: #444;
+    border: none;
+    color: #fff;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+#output {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+// script.js
+function checkCode() {
+    const code = document.getElementById('codeInput').value.trim();
+    const output = document.getElementById('output');
+
+    if (code === "HIC INCLASUS VITAM PERDITT") {
+        output.textContent = "Code Accepted: Welcome to the Labyrinth!";
+        output.style.color = "lime";
+    } else {
+        output.textContent = "Invalid Code. Try Again.";
+        output.style.color = "red";
+    }
+}
