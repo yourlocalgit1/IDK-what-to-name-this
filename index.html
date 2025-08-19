@@ -1,77 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Scrambler</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Enter the Code</h1>
-        <input type="text" id="codeInput" placeholder="Enter code here">
-        <button onclick="checkCode()">Submit</button>
-        <div id="output"></div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
-
-/* styles.css */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labyrinthus Code Scrambler</title>
+<style>
+/* --- Body & Background --- */
 body {
-    font-family: 'Courier New', monospace;
-    background-color: #2e2e2e;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
-    flex-direction: column;
+    font-family: 'Courier New', monospace;
+    background: black;
+    color: #0ff;
+    overflow: hidden;
 }
 
+/* --- Matrix-style falling letters --- */
+#matrix {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* --- Main container --- */
 .container {
+    position: relative;
+    z-index: 1;
     text-align: center;
-    border: 2px solid #fff;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #333;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0ff;
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
 }
 
+/* --- Input & Button --- */
 input, button {
-    background-color: #444;
-    border: none;
-    color: #fff;
+    background: black;
+    border: 1px solid #0ff;
+    color: #0ff;
     padding: 10px;
     margin: 10px;
     border-radius: 5px;
-    font-size: 16px;
-}
-
-button {
-    cursor: pointer;
+    font-size: 18px;
+    text-align: center;
 }
 
 button:hover {
-    background-color: #555;
+    box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    cursor: pointer;
 }
 
+/* --- Output --- */
 #output {
     margin-top: 20px;
-    font-size: 18px;
+    font-size: 24px;
+    min-height: 40px;
 }
+</style>
+</head>
+<body>
 
-// script.js
-function checkCode() {
-    const code = document.getElementById('codeInput').value.trim();
+<canvas id="matrix"></canvas>
+
+<div class="container">
+    <h1>Enter the Code</h1>
+    <input type="text" id="codeInput" placeholder="Enter code here">
+    <button onclick="scrambleCheck()">Submit</button>
+    <div id="output"></div>
+</div>
+
+<script>
+// --- Matrix background ---
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const drops = [];
+
+for(let x = 0; x < columns; x++) drops[x] = Math.random() * canvas.height;
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#0ff";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i]);
+        drops[i] += fontSize;
+        if(drops[i] > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    }
+}
+setInterval(drawMatrix, 50);
+
+// --- Scramble code function ---
+function scrambleCheck() {
+    const code = document.getElementById('codeInput').value.trim().toUpperCase();
     const output = document.getElementById('output');
 
-    if (code === "HIC INCLASUS VITAM PERDITT") {
-        output.textContent = "Code Accepted: Welcome!";
-        output.style.color = "lime";
-    } else {
-        output.textContent = "Invalid Code. Try Again.";
-        output.style.color = "red";
-    }
+    const secret = "HIC INCLASUS VITAM PERDITT";
+    let display = "";
 
+    let i = 0;
+    const scramble = setInterval(() => {
+        if(i < secret.length) {
+            let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            display = "";
+            for(let j = 0; j < secret.length; j++) {
+                if(j <= i) display += secret[j];
+                else display += letters[Math.floor(Math.random() * letters.length)];
+            }
+            output.textContent = display;
+            i++;
+        } else {
+            clearInterval(scramble);
+            if(code === secret) {
+                output.textContent = "Code Accepted: Welcome!";
+                output.style.color = "#0f0";
+                output.style.textShadow = "0 0 5px #0f0, 0 0 10px #0f0";
+            } else {
+                output.textContent = "Invalid Code!";
+                output.style.color = "#f00";
+                output.style.textShadow = "0 0 5px #f00, 0 0 10px #f00";
+            }
+        }
+    }, 50);
 }
+</script>
+
+</body>
+</html>
